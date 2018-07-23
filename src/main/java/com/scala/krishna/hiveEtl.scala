@@ -1,6 +1,8 @@
 package com.scala.krishna
 
 class myException extends java.lang.Exception() {}
+case class my(){}
+
 object hiveEtl {
   
 import org.slf4j.LoggerFactory
@@ -40,7 +42,7 @@ val logger = LoggerFactory.getLogger(hiveEtl.getClass)
   }
    
    def iwork_join(sc:SparkContext,hiveContext:HiveContext,epmData:DataFrame,cntry:String): DataFrame = {
-     val iwrkRead = hiveContext.sql(s"""select source_porfolio_cd,source_data_loc_cd,business_lines,product_lines,sub_product_lines,entity,cntry_cd as iwork_cntry_cd FROM nrd_app_frdv.IWORK WHERE Product_lines in ('CMU Long Term','CMU Short Term') and cntry_cd='$cntry' """)
+     val iwrkRead = hiveContext.sql(s"""select source_porfolio_cd,source_data_loc_cd,business_lines,product_lines,sub_product_lines,entity,cntry_cd as iwork_cntry_cd FROM *****.**** WHERE Product_lines in ('CMU Long Term','CMU Short Term') and cntry_cd='$cntry' """)
      val lcinOut = iwrkRead.join(epmData,iwrkRead.col("source_porfolio_cd").equalTo(epmData.col("lcin")),"inner")
      println("output of the iwork")
      lcinOut.show()
@@ -50,7 +52,7 @@ val logger = LoggerFactory.getLogger(hiveEtl.getClass)
    def murex_cmu(sc: SparkContext, hiveContext: HiveContext,biz_date:String , country:String){
      try{
        println("value is :" +country)
-     val epmConsolidated = hiveContext.sql(s"""Select * from nrd_app_frdv.epm_consolidated_ledger where sourcedataloccd='$country' and businessdt='$biz_date' and primarysourcesyscd='TQSP' """)
+     val epmConsolidated = hiveContext.sql(s"""Select * from ****.**** where sourcedataloccd='$country' and businessdt='$biz_date' and primarysourcesyscd='TQSP' """)
      println("Printing the EpmDetails")
      epmConsolidated.show()
      val lcins = iwork_join(sc,hiveContext,epmConsolidated,country)
