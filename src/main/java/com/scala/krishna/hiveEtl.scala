@@ -41,21 +41,21 @@ val logger = LoggerFactory.getLogger(hiveEtl.getClass)
     value.filter(value => value == null).size > 0
   }
    
-   def iwork_join(sc:SparkContext,hiveContext:HiveContext,epmData:DataFrame,cntry:String): DataFrame = {
-     val iwrkRead = hiveContext.sql(s"""select source_porfolio_cd,source_data_loc_cd,business_lines,product_lines,sub_product_lines,entity,cntry_cd as iwork_cntry_cd FROM *****.**** WHERE Product_lines in ('CMU Long Term','CMU Short Term') and cntry_cd='$cntry' """)
-     val lcinOut = iwrkRead.join(epmData,iwrkRead.col("source_porfolio_cd").equalTo(epmData.col("lcin")),"inner")
+   def i_join(sc:SparkContext,hiveContext:HiveContext,epmData:DataFrame,cntry:String): DataFrame = {
+     val iRead = hiveContext.sql(s"""select source_porfolio_cd,source_data_loc_cd,business_lines,product_lines,sub_product_lines,entity,cntry_cd as iwork_cntry_cd FROM *****.**** WHERE Product_lines in ('CMU Long Term','CMU Short Term') and cntry_cd='$cntry' """)
+     val lOut = iRead.join(epmData,iRead.col("source_porfolio_cd").equalTo(epmData.col("lcin")),"inner")
      println("output of the iwork")
-     lcinOut.show()
-     return lcinOut
+     lOut.show()
+     return lOut
    }
    
-   def murex_cmu(sc: SparkContext, hiveContext: HiveContext,biz_date:String , country:String){
+   def mmmm(sc: SparkContext, hiveContext: HiveContext,biz_date:String , country:String){
      try{
        println("value is :" +country)
-     val epmConsolidated = hiveContext.sql(s"""Select * from ****.**** where sourcedataloccd='$country' and businessdt='$biz_date' and primarysourcesyscd='TQSP' """)
+     val consolidated = hiveContext.sql(s"""Select * from ****.**** where sourcedataloccd='$country' and businessdt='$biz_date' and primarysourcesyscd='TQSP' """)
      println("Printing the EpmDetails")
-     epmConsolidated.show()
-     val lcins = iwork_join(sc,hiveContext,epmConsolidated,country)
+     consolidated.show()
+     val lcins = i_join(sc,hiveContext,consolidated,country)
      println("selecting the cols")
      lcins.select(col("lcin"),col("sourcedataloccd")).show()
      
@@ -110,7 +110,7 @@ val logger = LoggerFactory.getLogger(hiveEtl.getClass)
           hiveContext.setConf("spark.shuffle.spill.compress", "true")
           hiveContext.setConf("spark.shuffle.compress", "true")
           hiveContext.setConf("spark.sql.tungsten.enabled", "false")
-          murex_cmu(sc,hiveContext,businessDate,country)
+          mmmm(sc,hiveContext,businessDate,country)
           sc.stop()
   }
   
